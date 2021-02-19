@@ -64,13 +64,14 @@ function renderLatex (lr, latexFormula)
     if currDir == nil then
         return nil
     end
-	local svgPath = currDir .. "/" .. pandoc.sha1(latexDocument) .. ".svg"
+    local svgFileName = pandoc.sha1(latexDocument) .. ".svg"
+	local svgPath = currDir .. "/" .. svgFileName
 	local f = io.open(svgPath, "r")
 	if f ~= nil then
 		local depth = getDepth(f:read("a"))
 		f:close()
 		io.write(string.format("found SVG file=%s with depth=%spt\n", svgPath, depth))
-		return depth, svgPath
+		return depth, svgFileName
 	end
 	-- SVG file does not exist
 	local depth = system.with_temporary_directory("latexmath", function (tmpDir)
@@ -95,7 +96,7 @@ function renderLatex (lr, latexFormula)
             return depth
         end)
     end)
-    return depth, svgPath
+    return depth, svgFileName
 end
 
 function command (lr, svgPath)
@@ -118,18 +119,13 @@ function Math (elem)
         latexFormula1 = string.format("\\[%s\\]", latexFormula)
     end
     local lr = NewLatexRender()
-    local depth, svgPath = renderLatex(lr, latexFormula1)
-    svgPath = toFileUrl(svgPath)
+    local depth, svgFileName = renderLatex(lr, latexFormula1)
     local attrs = {alt = latexFormula}
     if depth ~= nil then
         attrs["style"] = string.format("vertical-align:-%spt", depth)
     end
     -- io.write(string.format("%s\n", dump(attrs)))
-    return pandoc.Image('', svgPath, '', attrs)
-end
-
-function toFileUrl (path)
-    return "file:///" .. string.gsub(path, '\\', '/')
+    return pandoc.Image('', svgFileName, '', attrs)
 end
 
 function dump (o)
