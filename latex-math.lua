@@ -12,7 +12,7 @@ function NewLatexRender()
             \usepackage{amsmath}
             \usepackage{amsfonts}
             \usepackage{amssymb}
-            \usepackage[T1,T2A]{fontenc}
+            \usepackage[T2A,T1]{fontenc}
             \usepackage{colordvi}
             \usepackage[active,tightpage]{preview}
         ]],
